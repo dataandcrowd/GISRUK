@@ -1,6 +1,6 @@
 ---
-title: "Geographic Biases in OSM Contributions"
-subtitle: "How do the Geographic Extent of Contributions Differ by Demographic groups?"
+title: "TRAP"
+subtitle: "A Novel Road-level Spatial Interpolation to Improve Estimation Errors of Air Pollution"
 date: 2022-04-19
 date-format: "MMM D, YYYY"
 author: "Hyesop Shin<br/>University of Glasgow"
@@ -13,6 +13,7 @@ format:
     css: styles.css
     logo: images/MRC_CSO_SPHSU_Glasgow_RGB.png
 ---
+
 
 
 ## Under-representation and Spatial Bias 
