@@ -23,32 +23,17 @@ london_meta %>% filter(site_type %in% c("Suburban", "Urban Background", "Industr
 
 #importKCL("BG2", year = 2019, pollutant = "no2")
 
-no2_road <- lapply(1:nrow(london_road), function(i){
+
+no2_road_raw <- lapply(1:nrow(london_road), function(i){
 importKCL(london_road$code[i], year = 2019) 
 })
 
-no2_road[lengths(no2_road) != 0] -> no2_road_new
+no2_road_raw[lengths(no2_road_raw) != 0] -> no2_road_new
+which(map_lgl(no2_road_new, ~ any(names(.) == "no2")))
+no2_road_new[-c(28, 49)] -> no2_road
 
-no2_road_new[1:10] -> df
-
-map(df, ~ .x %>% dplyr::select(date, code, no2))
-
-no2_road_new %>% 
-  map(safely(function()
-    .x %>% select(date, site, code, no2), otherwise = NA_real_
-  )
-  ) -> test
-
-
-#safe_select <- safely(map(data, ~ .x %>% select(date, site, code, no2)))
-
-try(
-test1 <- no2_road_new %>% 
-  map(., ~ .x %>% select(date, site, code, no2)),
-  silent = TRUE) 
-  
-  
-  #reduce(bind_row, by = c("date", "no2", "site", "code"))
+map(no2_road, ~ .x %>% dplyr::select(date, code, site, no2)) %>% 
+  map_df(tibble::as_tibble) -> no2_road_tib
 
 
 
