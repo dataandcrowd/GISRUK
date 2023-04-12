@@ -1,16 +1,18 @@
 library(openair)
 library(tidyverse)
+library(purrr)
 options(warn = -1)
+
+london_meta <- importMeta(source = "kcl", all = T) %>% 
+  filter(la_id %in% c(1:33),
+         is.na(ClosingDate),
+         !is.na(latitude))
 
 london_meta %>% 
   filter(latitude > 51) %>% 
   ggplot(aes(longitude, latitude, colour = site_type)) +
   geom_point()
 
-london_meta <- importMeta(source = "kcl", all = T) %>% 
-  filter(la_id %in% c(1:33),
-         is.na(ClosingDate),
-         !is.na(latitude))
 
 
 
@@ -27,9 +29,26 @@ importKCL(london_road$code[i], year = 2019)
 
 no2_road[lengths(no2_road) != 0] -> no2_road_new
 
+no2_road_new[1:10] -> df
+
+map(df, ~ .x %>% dplyr::select(date, code, no2))
 
 no2_road_new %>% 
-  reduce(left_join, by = c("date", "no2", "site", "code"))
+  map(safely(function()
+    .x %>% select(date, site, code, no2), otherwise = NA_real_
+  )
+  ) -> test
+
+
+#safe_select <- safely(map(data, ~ .x %>% select(date, site, code, no2)))
+
+try(
+test1 <- no2_road_new %>% 
+  map(., ~ .x %>% select(date, site, code, no2)),
+  silent = TRUE) 
+  
+  
+  #reduce(bind_row, by = c("date", "no2", "site", "code"))
 
 
 
