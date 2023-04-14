@@ -273,7 +273,7 @@ ras_krige_df1 %>%
   geom_tile(aes(x = x, y = y, fill = NO2)) +
   geom_tile(data= ras_krige_df, aes(x = x, y = y, fill = NO2)) +
   geom_sf(data = london_gis_admin, color = 'grey50', alpha = 0.1, fill=NA) +
-  scale_fill_distiller(palette = "Spectral", na.value = NA, limits = c(20,80), breaks = c(20, 40, 60, 80)) +
+  scale_fill_distiller(palette = "Spectral", na.value = NA, limits = c(0, 90), breaks = c(0, 30, 60, 90)) +
   theme_minimal() +
   theme(legend.position = "bottom",
         axis.title.x=element_blank(),
