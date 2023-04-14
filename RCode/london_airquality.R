@@ -169,10 +169,12 @@ london_gis_road %>%
 no2_back_dn %>% 
   st_as_sf(coords = c("os_grid_x", "os_grid_y"), 
            crs = 27700, agr = "constant") %>% 
+  filter(dn == "Work") %>% 
   as_Spatial() -> no2_sp
 
 
-myVario <- automap::autofitVariogram(no2 ~ dn, no2_sp)#, cutoff = 30000, width = 3000)
+myVario <- automap::autofitVariogram(no2 ~ 1, no2_sp)
+#myVario <- automap::autofitVariogram(no2 ~ dn, no2_sp)
 class(myVario)
 plot(myVario)
 
@@ -193,21 +195,16 @@ kriging_result$krige_output@data %>%
 bind_cols(kriging_df, kriging_data) %>% 
   rename(X = right,
          Y = top,
-         no2 = var1.pred) -> kriging_df_combined
+         no2 = var1.pred) %>% 
+  select(X, Y, no2) -> kriging_df_combined
 
 
 kriging_df_combined %>% 
   ggplot() +
   geom_tile(aes(x = X, y = Y, fill = no2)) +
-  scale_fill_distiller(palette = "Spectral", na.value = NA, limits = c(10,70), breaks = c(20,40,60)) +
-  #geom_tile(aes(x = x, y = y, fill = NO2)) +
+  scale_fill_distiller(palette = "Spectral", na.value = NA) +#, limits = c(10,70), breaks = c(20,40,60)) +
   geom_sf(data = london_gis_admin, color = 'black', size = 2, fill=NA) +
-  #geom_sf(data = gis, color = "blue", fill = NA) +
-  #geom_text(data = stat, aes(-Inf, -Inf, label = paste0("mean = " , mean)), hjust = -.1, vjust = -2, size = 3.5) +
-  #geom_text(data = stat, aes(-Inf, -Inf, label = paste0("sd = " , sd)), hjust = -.15, vjust = -1, size = 3.5) +
-  #geom_text(data = stat, aes(-Inf, Inf, label = paste0("RMSE=" , rmse)), hjust = -.1, vjust = 1.2, size = 3.5) +
-  #facet_wrap(~ Hour, ncol = 8) +
-  theme_bw() +
+  theme_minimal() +
   theme(legend.position = "bottom",
         axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -216,64 +213,77 @@ kriging_df_combined %>%
         axis.title.y=element_blank(),
         strip.text.x = element_text(size = 20),
         legend.title=element_text(size=15), 
-        legend.text=element_text(size=15)                                  
+        legend.text=element_text(size=15)
   ) 
+
+ggsave("London_NO2_kriged.jpg", width = 5, height = 5, dpi = 300)
+
+###
+library(sp)
+library(raster)
+kriging_df_combined %>% 
+  raster::rasterFromXYZ(crs="+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs",
+                digits=5) -> ras_krige
+
+ras_road <- raster::raster("GIS/London_Road2.tif") 
+resample <- raster::resample(ras_krige, ras_road, method = "bilinear") # resample 
+
+
+#resample1 <- raster::merge(ras_road, resample) # merge
+
+#writeRaster(resample, 'resample.tif', overwrite=T)
+
+values(ras_road)[values(ras_road) == 1] <- 1.79
+values(ras_road)[values(ras_road) == 2] <- 1.2
+values(ras_road)[values(ras_road) == 3] <- 1.1
+
+#writeRaster(ras_road, 'road.tif', overwrite=T)
+
+
+gis_kr <- overlay(resample, ras_road, fun = function(x,y){ifelse(y != 0, x*y, x)})
+
+plot(gis_kr)
+
+
+### road
+ras <- xyFromCell(gis_kr, 1:ncell(gis_kr))
+krige.df <- as.data.frame(gis_kr) 
+
+ras_krige_df <- 
+  data.frame(ras, krige.df) %>% 
+  pivot_longer(!c("x", "y"), names_to = "Day", values_to = "NO2") 
+  
+
+
+###
+ras1 <- xyFromCell(resample, 1:ncell(resample))
+krige.df1 <- as.data.frame(resample) 
+
+ras_krige_df1 <- 
+  data.frame(ras1, krige.df1) %>% 
+  pivot_longer(!c("x", "y"), names_to = "Day", values_to = "NO2") 
 
 
 
 
 ###
 
-kriging_df_combined %>% 
-  rasterFromXYZ(crs="+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs",
-                digits=5) -> ras_krige
-
-ras.road <- raster("GIS/London_Road.tif") %>% stack
-resample <- resample(ras_krige, ras.road, method = "bilinear") # resample 
-resample1 <- merge(ras.road, resample) # merge
-
-
-gis
-
-
-#road_01 = road_02 = road_03 = ras.road
-#road.stack <- stack(road_01, road_02, road_03) 
-
-#values(road.stack$London_Road.1) %>% summary()
-values(ras.road)[values(ras.road) == 1] <- 1.79
-values(ras.road)[values(ras.road) == 2] <- 1.4
-values(ras.road)[values(ras.road) == 3] <- 1.2
-
-gis_kr <- overlay(resample1$layer.1, ras.road, fun = function(x,y){ifelse(y != 0, x*y, x)})
-
-plot(gis_kr)
-
-ras <- xyFromCell(gis_kr, 1:ncell(gis_kr))
-krige.df <- as.data.frame(gis_kr) 
-
-ras.krige.df <- data.frame(ras, krige.df) %>% 
-  reshape2::melt(id = c("x", "y"), variable.name = "Hour", value.name = "NO2") 
-
-
-ras.krige.df %>% 
+ras_krige_df1 %>% 
   ggplot() +
   geom_tile(aes(x = x, y = y, fill = NO2)) +
-  scale_fill_distiller(palette = "Spectral", na.value = NA) +#, limits = c(10,100), breaks = c(0,25,50,75,100)) +
-  #geom_sf(data = london_gis_admin, color = 'black', size = 2, fill=NA) +
-  # geom_text(data = stat1, aes(-Inf, -Inf, label = paste0("mean = " , mean)), hjust = -.1, vjust = -2, size = 3.5) + 
-  # geom_text(data = stat1, aes(-Inf, -Inf, label = paste0("sd = " , sd)), hjust = -.1, vjust = -1, size = 3.5) + 
-  # geom_path(data = seoul, aes(x = long, y = lat), color = 'black', size = 1) +
-  # facet_wrap(~ Hour, ncol = 8) +
-  theme_bw() +
-  theme(axis.title.x=element_blank(),
+  geom_tile(data= ras_krige_df, aes(x = x, y = y, fill = NO2)) +
+  geom_sf(data = london_gis_admin, color = 'grey50', alpha = 0.1, fill=NA) +
+  scale_fill_distiller(palette = "Spectral", na.value = NA, limits = c(20,80), breaks = c(20, 40, 60, 80)) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.text.y=element_blank(),
         axis.title.y=element_blank(),
         strip.text.x = element_text(size = 20),
         legend.title=element_text(size=15), 
-        legend.text=element_text(size=15)                                  
+        legend.text=element_text(size=15)
   ) 
 
-
-
+ggsave("London_NO2_kriged_final.jpg", width = 5, height = 5, dpi = 300)
