@@ -1,0 +1,288 @@
+---
+title: "Geographic Biases in OSM Contributions"
+subtitle: "How do the Geographic Extent of Contributions Differ by Demographic groups?"
+date: "April 6th 2022"
+author: "Hyesop Shin, Ana Basiri<br/>University of Glasgow"
+format:
+  revealjs: 
+    theme: default
+    incremental: false 
+    slide-number: true
+    preview-links: auto
+    css: styles.css
+    logo: images/frontlogo.png
+---
+
+
+## Under-representation and Spatial Bias 
+::: {.fragment .fade-up}
+* **Crowdsourced Data: Patchy Distribution Across Space & Time**
+   - A well-known feature of the data from citizen science projects is the patchy distribution of maps across space and time
+   - This leaves global citizen science datasets with spatial and temporal gaps and redundancies
+:::
+
+::: {.fragment .fade-up}
+* **Understanding the crowd's temporal patterns and their spatial preferences is imperative**
+   - Contributors’ daily volunteering routines and preferences can reveal habits and interests
+   - Can assist app designers and software engineers to create more inclusive crowdsourcing platforms
+:::
+
+![](images/spatialbias.png){.absolute top="560" left="350" width="400" height="150"}
+
+::: {.notes}
+* Our focus: is the volunteers
+* Current literature of citizen science looking at spatial and temporal biases:
+Ecological Fallacy
+* Do not breakdown the records by demographic groups even though certain cohorts have different distributions than their counterparts. These studies only imply gender or age biases as a whole.
+* Focus either on demographic characteristics or spatial and temporal patterns - the two perspectives are usually not put into relation with each other
+* Strava is attempting to consider gender, age
+* Still at very young stage
+:::
+
+
+## Study Objective
+
+<p style="font-size:45px; margin-top: 1em;">
+  How do the Geographic Extent of Contributions (Spatial Bias) Differ by Demographic groups?
+</p>
+
+<p style="font-size:45px;text-align:center;margin-top: 1em;">
+&#8601;&#8600;
+</p>
+
+
+:::: {.columns style="margin-top: 1em"}
+::: {.column width="40%"}
+- OSM Data Exploration by gender and age 
+:::
+
+::: {.column width="20%"}
+
+:::
+
+::: {.column width="40%"}
+- Spatial Diversity of OSM contributions by gender and age 
+:::
+::::
+
+## Methods
+
+![](images/methods.png){.absolute top="100" left="100" width="900" height="480"}
+
+
+## Simpson’s Index of Diversity: The Metrics
+
+<span style="font-size:50px">$$D' = 1 - (\sum n(n-1)/N(N-1))$$</span>
+
+
+::: {style="text-align: center; margin-top: 1.5em"}
+- Probability that any two randomly selected countries from the sample will be different
+   - 0: Low diversity (tends to be domestic)
+   - 1: High diversity
+- **N**: Total number of contributions (by user)
+- **n**: Number of contributions at particular country (by user)
+- Defined at individual level and then aggregated by gender and age
+:::
+
+
+::: {.notes}
+We first defined at individual level and then aggregated by averaging over users with same gender and age cohort
+:::
+
+## Simpson’s Index of Diversity: Quick Example
+:::: {.columns}
+::: {.column width="50%"}
+![](images/simpsonex1.png){.absolute top="200" left="50" width="350" height="350"}
+:::
+
+::: {.column width="50%"}
+- $D' = 1 - (\sum n(n-1)/N(N-1))$
+- $D' = 1 - (\frac{36(36-1)+2(2-1)+1(1-1)} {39(39-1)})$
+- $D' = 1 - (\frac{1282}{1482})$
+- $1 - 0.85$
+- $0.15$
+
+<span style="color:blue">*15% chance of randomly picking 2 that are different*</span>
+:::
+::::
+
+::: footer
+Credits: Calculate Simpson's Index, Peter Stanley's Youtube Channel
+:::
+
+
+## Simpson’s Index of Diversity: Quick Example
+:::: {.columns}
+
+::: {.column width="50%"}
+![](images/simpsonex2.png){.absolute top="200" left="50" width="350" height="350"}
+:::
+
+::: {.column width="50%"}
+- $D' = 1 - (\sum n(n-1)/N(N-1))$
+- $D' = 1 - (\frac{6(6-1)+6(6-1)+6(6-1)} {18(18-1)})$
+- $D' = 1 - (\frac{90}{306})$
+- $1 - 0.29$
+- $0.71$
+
+<span style="color:blue">*71% chance of randomly picking 2 that are different*</span>
+:::
+::::
+
+::: footer
+Credits: Calculate Simpson's Index, Peter Stanley's Youtube Channel
+:::
+
+
+
+## Results{background="#43464B"}
+
+::: {style="margin-top: 1em"}
+
+- Exploratory Findings
+- Simpson’s Diversity Index
+:::
+
+
+## Top three countries accounted for 60% of the total contribution
+
+![](images/barplot.png){.absolute top="200" left="0" width="500" height="400"}
+![](images/wordcloud.png){.absolute top="220" left="600" width="400" height="350"}
+
+
+## Contributed Countries by Users’ Demography
+:::: {.columns}
+
+::: {.column width="50%"}
+![](images/violin.png){.absolute top="200" left="-30" width="500" height="350"}
+:::
+
+::: {.column width="50%"}
+- Long-tail distribution: Men and women in 20s
+- Women > 30s: Fewer than 100 contributed countries
+- **Oversampling?**: OSM, in general, might have a similar distribution
+:::
+::::
+
+
+
+## Spatial Diversity: Gender
+:::: {.columns}
+
+::: {.column width="50%"}
+![](images/density.png){.absolute top="150" left="-30" width="500" height="480"}
+:::
+
+::: {.column width="50%" .nonincremental style="margin-top: 1em"}
+- SID: Female: 0.50 Male: 0.67
+- Male participants were likely contribute to more countries than their female counterparts.
+- However, two peaks of diversity patterns of the female users mean that the spatial preference within the group contrasts significantly
+:::
+::::
+
+
+## Spatial Diversity: Gender & Age
+:::: {.columns}
+
+::: {.column width="50%"}
+![](images/boxplotage.png){.absolute top="100" left="-30" width="500" height="480"}
+:::
+
+::: {.column width="50%" .nonincremental}
+- Male participants have systematically scored higher diversity measures across both age groups
+- The scores of female participants are constantly lower than that of males, and it <span style="color:blue">*varies significantly by age groups*</span>
+- Female 40-50s’ have wider variation due to small number of participants
+:::
+::::
+
+
+
+## Conclusion
+::: {.panel-tabset}
+
+### Exploratory Analysis
+
+- No.of Contributed Countries: Women were remarkably lower than that of men
+- However, such variabilities was identified by the disaggregation of gender and age
+    * Men between 20s-50s & Women in 20s
+
+::: {.notes}
+- Men in 20s' to over 50s' groups and women in the 20s' group had polarised contributions where the averages were at 40-50 countries but have extreme users who contribute to over 150 countries. 
+:::
+
+### Simpson’s Index of Diversity
+
+- Men were more likely to be spatial diverse than their female counterparts.
+   * M: .67, W: .50
+- However, this once again varied significantly by the age groups.
+
+| Age  | Men  | Women |
+|------|------|-------|
+| 20s: | 0.7  | 0.42  |
+| 30s: | 0.69 | 0.63  |
+| 40s: | 0.66 | 0.51  |
+| 50s: | 0.64 | 0.44  |
+
+
+### Things we noticed
+- Unequal samples: Men (188 persons) vs Women (30 persons) ⇐ might represent the online population?
+- Loosely categorised of unstructured sampling: a few extreme users can change the entire statistics “long-tail”
+- Ways to minimise the uneven spatial coverage:
+   - the use of sophisticated methods
+   - filtering
+   - inter-observer skills
+:::
+
+
+## {.tabset}
+
+<p style="font-size:70px; text-align:center; margin-top: 3em">
+Thank You
+</p>
+
+<p style="font-size:70px; text-align:center">
+Q & A
+</p>
+
+<p style="font-size:25px; text-align:left">
+Hyesop Shin (2022) Geographic Biases in OSM Contributions: How do the Geographic Extent of Contributions Differ among Demographic groups? [CodeOcean]. [https://doi.org/10.24433/CO.2886888.v1](https://doi.org/10.24433/CO.2886888.v1)
+</p>
+
+
+::: footer
+**The work presented in this paper has been funded by the UK Research and Innovation (UKRI) Future Leaders Fellowship MR/S01795X/2.**
+:::
+
+<!--## VGI
+:::: {.columns}
+::: {.column width="50%"}
+![](images/vgi.png){.absolute top="0" left="-100" width="700" height="500"}
+![](images/apps.png){.absolute top="450" left="-50" width="400" height="200"}
+:::
+
+::: {.column width="50%"}
+<p style="font-size:40px; margin-top: 1em">
+  the use of digital devices to collect, assemble, modify and share geographic data provided voluntarily by citizens (Goodchild, 2007)
+</p>
+:::
+::::
+
+## Our Focus: The Volunteers
+![](images/focus.png){.absolute top="100" left="0" width="1300" height="430"}
+-->
+
+
+<!--
+## Volunteers are not always representative
+
+
+<p style="font-size:45px; margin-top: 1em; color: blue">
+  Under-represented crowd
+</p>
+- A silent minority who needs information about public facilities
+- A community with local knowledge but weakness in internet technology
+- Voluntary works are to some extent associated with the time spent on computers and social media (Jago et al., 2014; Clary et al., 2020)
+
+
+![](images/underrepresented.png){.absolute top="500" left="100" width="800" height="150"}
+-->
