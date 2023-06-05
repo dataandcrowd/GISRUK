@@ -151,25 +151,6 @@ london_gis_road %>%
 
 
 
-# library(sf)
-# 
-# rd <- read_sf("GIS/London_Roads_Weighted.shp")
-# 
-# rd %>% 
-#   select(Road_Class, Road_Num, ONS_INNER)-> rd_new
-# 
-# rd_new %>% 
-#   mutate(Road_Weight = case_when(Road_Num == 1 & ONS_INNER == T ~ 1.79,
-#                                  Road_Num == 1 & ONS_INNER == F ~ 1.31,
-#                                  Road_Num == 2 & ONS_INNER == T ~ 1.37,
-#                                  Road_Num == 2 & ONS_INNER == F ~ 1.20
-#   )) -> rd_fin
-# 
-# 
-# st_write(rd_fin, "London_Roads_Weighted.shp")
-# 
-# 
-# plot(rd_fin["Road_Weight"])
 
 ## Kriging
 # no2_back_dn %>% 
